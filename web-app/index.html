@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spine Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Spine Tracker</h1>
+            <p class="status" id="statusText">Disconnected</p>
+        </header>
+
+        <main>
+            <div class="visualization-container">
+                <canvas id="spineCanvas"></canvas>
+            </div>
+            
+            <div class="controls">
+                <button id="connectBtn" class="btn primary">Connect to Spine</button>
+            </div>
+
+            <div class="sensor-data" id="sensorData">
+                <!-- Sensor values will be populated here for debugging -->
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
