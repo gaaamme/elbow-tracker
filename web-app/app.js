@@ -105,85 +105,99 @@ function drawSpine() {
     const startX = canvas.width / 2;
     const startY = canvas.height - 50;
 
-    ctx.beginPath();
-    ctx.moveTo(startX, startY);
-
     let currentX = startX;
     let currentY = startY;
     let currentAngle = -Math.PI / 2; // Pointing up
 
-    // Draw segments
-    // We can use a simple forward kinematics approach
-    // Or draw a bezier curve through points. Let's do segments first for visualization clarity, then smooth it.
-
-    const points = [{ x: startX, y: startY }];
+    const points = [{ x: startX, y: startY, angle: currentAngle }];
 
     for (let i = 0; i < numSegments; i++) {
-        // Map 0-255 to an angle deflection
-        // 0 -> -30 degrees (bent left/back)
-        // 255 -> +30 degrees (bent right/forward)
-        // Adjust these mappings based on physical sensor mounting
-        // Let's assume 0 is straight, and increasing value bends it.
-        // Actually, usually flex sensors increase resistance when bent.
-        // Let's assume input 0-255 maps to curvature.
+        // Map sensor values to bend angle
+        // Center value (128) = straight, deviation creates bend
+        const centerValue = 128;
+        const deviation = (sensorValues[i] - centerValue) / 255;
+        const bend = deviation * (Math.PI / 3); // Max ±60 degrees
 
-        // A simple model: each segment adds to the angle of the previous one relative to the "straight" line
-        // But physically, the spine is a continuous curve.
-        // Let's treat sensorValues as "local curvature" or "deflection angle" for that segment.
-
-        // Normalize 0-255 to -0.5 to 0.5 radians (approx -30 to 30 degrees)
-        // Let's assume 0 is straight for now.
-        const bend = (sensorValues[i] / 255) * (Math.PI / 2); // 0 to 90 degrees max bend
-
-        // For a spine, usually we want to visualize the cumulative shape.
-        // Let's just add the bend to the current angle.
-        // Note: This is a simplification.
-        currentAngle += (bend * 0.5); // Dampen the effect slightly
+        currentAngle += bend * 0.6; // Cumulative bending
 
         const nextX = currentX + Math.cos(currentAngle) * segmentLength;
         const nextY = currentY + Math.sin(currentAngle) * segmentLength;
 
-        points.push({ x: nextX, y: nextY });
+        points.push({ x: nextX, y: nextY, angle: currentAngle });
 
         currentX = nextX;
         currentY = nextY;
     }
 
-    // Draw the spine as a smooth curve
-    // Using quadratic curves between midpoints
+    // Draw spinal cord (thin line connecting vertebrae)
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    ctx.lineWidth = 12;
-    ctx.strokeStyle = '#38bdf8'; // Accent color
+    ctx.lineWidth = 8;
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.3)';
 
-    if (points.length > 2) {
-        ctx.beginPath();
-        ctx.moveTo(points[0].x, points[0].y);
-
-        for (let i = 1; i < points.length - 1; i++) {
-            const xc = (points[i].x + points[i + 1].x) / 2;
-            const yc = (points[i].y + points[i + 1].y) / 2;
-            ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
-        }
-        // Connect to the last point
-        ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
-        ctx.stroke();
-    } else {
-        // Fallback for straight line
-        ctx.beginPath();
-        ctx.moveTo(points[0].x, points[0].y);
-        for (let i = 1; i < points.length; i++) {
-            ctx.lineTo(points[i].x, points[i].y);
-        }
-        ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) {
+        ctx.lineTo(points[i].x, points[i].y);
     }
+    ctx.stroke();
 
-    // Draw "vertebrae" or nodes
-    ctx.fillStyle = '#f8fafc';
-    points.forEach(p => {
+    // Draw vertebrae as rounded rectangles
+    points.forEach((point, index) => {
+        const vertebraWidth = 45;
+        const vertebraHeight = 35;
+        const radius = 8;
+
+        ctx.save();
+        ctx.translate(point.x, point.y);
+        ctx.rotate(point.angle + Math.PI / 2); // Perpendicular to spine direction
+
+        // Vertebra body (main bone)
+        ctx.fillStyle = '#e2e8f0';
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 2;
+
+        // Draw rounded rectangle
         ctx.beginPath();
-        ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
+        ctx.moveTo(-vertebraWidth / 2 + radius, -vertebraHeight / 2);
+        ctx.lineTo(vertebraWidth / 2 - radius, -vertebraHeight / 2);
+        ctx.quadraticCurveTo(vertebraWidth / 2, -vertebraHeight / 2, vertebraWidth / 2, -vertebraHeight / 2 + radius);
+        ctx.lineTo(vertebraWidth / 2, vertebraHeight / 2 - radius);
+        ctx.quadraticCurveTo(vertebraWidth / 2, vertebraHeight / 2, vertebraWidth / 2 - radius, vertebraHeight / 2);
+        ctx.lineTo(-vertebraWidth / 2 + radius, vertebraHeight / 2);
+        ctx.quadraticCurveTo(-vertebraWidth / 2, vertebraHeight / 2, -vertebraWidth / 2, vertebraHeight / 2 - radius);
+        ctx.lineTo(-vertebraWidth / 2, -vertebraHeight / 2 + radius);
+        ctx.quadraticCurveTo(-vertebraWidth / 2, -vertebraHeight / 2, -vertebraWidth / 2 + radius, -vertebraHeight / 2);
+        ctx.closePath();
         ctx.fill();
+        ctx.stroke();
+
+        // Spinous process (the protruding part)
+        ctx.fillStyle = '#cbd5e1';
+        ctx.beginPath();
+        ctx.moveTo(0, vertebraHeight / 2);
+        ctx.lineTo(-8, vertebraHeight / 2 + 12);
+        ctx.lineTo(8, vertebraHeight / 2 + 12);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Spinal canal (hole in the middle)
+        ctx.fillStyle = '#475569';
+        ctx.beginPath();
+        ctx.arc(0, 0, 6, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Sensor indicator (color based on flex)
+        if (index > 0 && index <= numSegments) {
+            const intensity = sensorValues[index - 1] / 255;
+            ctx.fillStyle = `rgba(56, 189, 248, ${0.3 + intensity * 0.7})`;
+            ctx.beginPath();
+            ctx.arc(0, 0, 10, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        ctx.restore();
     });
 }
 

@@ -78,8 +78,8 @@ void readSensors() {
     sensorValues[i] = (uint8_t)constrain(mappedValue, 0, 255);
     
     // Debug print
-    // Serial.print(sensorValues[i]);
-    // Serial.print(" ");
+    Serial.print(sensorValues[i]);
+    Serial.print(" ");
   }
   // Serial.println();
 }
