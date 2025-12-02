@@ -22,31 +22,53 @@ body {
     color: var(--text-primary);
     min-height: 100vh;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    /* Changé */
     align-items: center;
+    padding: 0;
+    /* Supprime le padding */
 }
 
 .container {
     width: 100%;
     max-width: 600px;
-    padding: 2rem;
+    padding: 1rem;
+    padding-top: 70px;
+    /* Espace pour le header fixe */
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1rem;
+    min-height: 100vh;
 }
 
-header {
+.top-header {
+    width: 100%;
     text-align: center;
-    margin-bottom: -1rem;
+    padding: 12px 20px;
+    background: var(--bg-color);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
 }
 
-h1 {
+
+.top-header h1 {
     font-weight: 600;
-    font-size: 1.5rem;
-    margin-bottom: 0.25rem;
+    font-size: 1.3rem;
+    margin: 0;
     background: linear-gradient(to right, var(--accent-color), #818cf8);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
+}
+
+.top-header .subtitle {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-weight: 300;
+    margin: 2px 0 0 0;
 }
 
 .status {
@@ -63,8 +85,10 @@ h1 {
     background-color: var(--card-bg);
     border-radius: 1rem;
     padding: 1rem;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    aspect-ratio: 3/4;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    /* Prend tout l'espace disponible */
+    min-height: 60vh;
     position: relative;
     overflow: hidden;
 }
