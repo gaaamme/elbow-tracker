@@ -21,10 +21,10 @@ const char *charUUID = "19B10001-E8F2-537E-4F6C-D104768A1214";
 
 BLEService spineService(serviceUUID);
 BLECharacteristic spineDataChar(charUUID, BLERead | BLENotify,
-                                5); // Keeping 5 bytes for compatibility
+                                2); // 2 bytes for 10-bit sensor data
 
 const int sensorPin = A0;
-uint8_t sensorValues[5];
+uint8_t sensorValues[2];
 
 void setup() {
   Serial.begin(9600);
@@ -55,7 +55,7 @@ void loop() {
 
     while (central.connected()) {
       readSensor();
-      spineDataChar.writeValue(sensorValues, 5);
+      spineDataChar.writeValue(sensorValues, 2);
       delay(50); // 20Hz update rate
     }
 
@@ -68,15 +68,10 @@ void readSensor() {
   int rawValue = analogRead(sensorPin);
 
   // Send raw 10-bit value (0-1023) split into 2 bytes
-  // Byte 0: High byte
-  // Byte 1: Low byte
+  // Byte 0: High byte (bits 8-9)
+  // Byte 1: Low byte (bits 0-7)
   sensorValues[0] = (rawValue >> 8) & 0xFF;
   sensorValues[1] = rawValue & 0xFF;
-
-  // Fill the rest with 0
-  for (int i = 2; i < 5; i++) {
-    sensorValues[i] = 0;
-  }
 
   // Debug print
   Serial.print("Raw: ");
