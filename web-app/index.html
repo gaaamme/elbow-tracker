@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elbow Flexion Tracker</title>
+    <title>Détection de position</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <header class="top-header">
-        <h1>Elbow Flexion Tracker</h1>
-        <p class="subtitle">Real-Time Visualization of Elbow Angle</p>
+        <h1>Détection de position</h1>
+        <p class="subtitle">Visualisation de l'angle du coude</p>
     </header>
 
     <main class="container">
@@ -21,25 +21,25 @@
 
         <div class="controls-wrapper">
             <div class="status-bar">
-                <span id="status" class="status">Disconnected</span>
+                <span id="status" class="status">Déconnecté</span>
             </div>
 
             <div class="controls">
-                <button id="connectBtn" class="btn">Connect to Serial</button>
-                <button id="calibrateBtn" class="btn" disabled>Calibrate</button>
+                <button id="connectBtn" class="btn">Se connecter</button>
+                <button id="calibrateBtn" class="btn" disabled>Calibrer</button>
             </div>
 
             <div id="sensorData" class="sensor-data">
                 <div class="data-card">
-                    <span class="data-label">Raw Input</span>
+                    <span class="data-label">Valeur brute</span>
                     <span class="data-value" id="val-raw">0</span>
                 </div>
                 <div class="data-card">
-                    <span class="data-label">Calibration</span>
+                    <span class="data-label">Calibrage</span>
                     <span class="data-value" id="val-offset">0</span>
                 </div>
                 <div class="data-card">
-                    <span class="data-label">Flex Angle</span>
+                    <span class="data-label">Angle de flexion</span>
                     <span class="data-value" id="val-angle">0.0°</span>
                 </div>
             </div>

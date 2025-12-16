@@ -46,26 +46,26 @@ calibrateBtn.addEventListener('click', () => {
 async function connect() {
     try {
         if ("serial" in navigator) {
-            statusText.textContent = "Requesting Port...";
+            statusText.textContent = "Demande de port...";
             port = await navigator.serial.requestPort();
 
-            statusText.textContent = "Opening...";
+            statusText.textContent = "Ouverture...";
             await port.open({ baudRate: 9600 });
 
-            statusText.textContent = "Connected";
+            statusText.textContent = "Connecté";
             statusText.classList.add('connected');
-            connectBtn.textContent = "Disconnect";
+            connectBtn.textContent = "Déconnecter";
             calibrateBtn.disabled = false;
 
             keepReading = true;
             readSerialLoop();
             animate(); // Start animation loop
         } else {
-            statusText.textContent = "Web Serial not supported.";
+            statusText.textContent = "Web Serial non supporté.";
         }
     } catch (error) {
         console.error(error);
-        statusText.textContent = "Failed: " + error.message;
+        statusText.textContent = "Échec : " + error.message;
     }
 }
 
@@ -82,9 +82,9 @@ async function disconnect() {
 }
 
 function onDisconnected() {
-    statusText.textContent = "Disconnected";
+    statusText.textContent = "Déconnecté";
     statusText.classList.remove('connected');
-    connectBtn.textContent = "Connect to Serial";
+    connectBtn.textContent = "Se connecter";
     calibrateBtn.disabled = true;
 }
 
@@ -147,7 +147,7 @@ function handleSerialData(dataString) {
 
 function calibrate() {
     calibrationOffset = rawSensorValue;
-    alert("Calibration Set!");
+    alert("Calibrage effectué !");
 }
 
 function updateSensorDisplay() {
