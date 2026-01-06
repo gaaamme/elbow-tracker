@@ -212,11 +212,17 @@ function drawScene() {
     ctx.fill();
     ctx.stroke();
 
-    // --- Angles for 3 joints (simple distribution) ---
-    const totalAngleRad = currentAngle * Math.PI / 180;
-    const angle1 = totalAngleRad * 0.4;  // MCP
-    const angle2 = totalAngleRad * 0.35; // PIP
-    const angle3 = totalAngleRad * 0.25; // DIP
+    // --- Angles pour les 3 articulations (enroulement) ---
+    const MCP_MAX = 80;   // base du doigt
+    const PIP_MAX = 100;  // articulation du milieu
+    const DIP_MAX = 60;   // extrémité
+
+    const norm = Math.min(Math.max(currentAngle / 180, 0), 1); // 0..1 selon ton angle global
+
+    const angle1 = (MCP_MAX * norm) * Math.PI / 180;         // MCP
+    const angle2 = (PIP_MAX * Math.pow(norm, 1.2)) * Math.PI / 180; // PIP
+    const angle3 = (DIP_MAX * Math.pow(norm, 1.5)) * Math.PI / 180; // DIP
+
 
     // --- 2. Draw 3‑segment finger ---
     ctx.save();
