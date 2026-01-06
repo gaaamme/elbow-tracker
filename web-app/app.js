@@ -186,18 +186,22 @@ function drawScene() {
 
     const activeColor = getColorForAngle(currentAngle);
 
-    // --- Palm and Finger Dimensions ---
+    // --- Palm dimensions ---
     const handWidth = 150 * scale;
     const handHeight = 90 * scale;
-    const fingerLength = 120 * scale;
+
+    // --- Finger segment dimensions ---
+    const seg1Length = 80 * scale;   // proximal
+    const seg2Length = 70 * scale;   // medial
+    const seg3Length = 60 * scale;   // distal
     const fingerThickness = 25 * scale;
     const jointSize = fingerThickness * 0.9;
 
-    // The hand is drawn centered horizontally. The pivot for the finger is on the right.
+    // Hand position and knuckle pivot
     const handStartX = cx - handWidth / 1.5;
     const handStartY = cy - handHeight / 2;
-    const pivotX = handStartX + handWidth; // Knuckle position
-    const pivotY = cy; 
+    const pivotX = handStartX + handWidth; // MCP joint
+    const pivotY = cy;
 
     // --- 1. Draw Palm ---
     ctx.fillStyle = '#334155';
@@ -208,25 +212,28 @@ function drawScene() {
     ctx.fill();
     ctx.stroke();
 
-    // --- 2. Draw Finger (Rotates) ---
+    // --- Angles for 3 joints (simple distribution) ---
+    const totalAngleRad = currentAngle * Math.PI / 180;
+    const angle1 = totalAngleRad * 0.4;  // MCP
+    const angle2 = totalAngleRad * 0.35; // PIP
+    const angle3 = totalAngleRad * 0.25; // DIP
+
+    // --- 2. Draw 3‑segment finger ---
     ctx.save();
     ctx.translate(pivotX, pivotY);
 
-    // Rotation: 0 degrees angle = straight finger.
-    const rotation = (currentAngle * Math.PI / 180);
-    ctx.rotate(rotation);
-
-    // Finger Shape
+    // Segment 1 (proximal)
+    ctx.save();
+    ctx.rotate(angle1);
     ctx.beginPath();
-    // Centering the finger on its rotation axis
-    ctx.roundRect(0, -fingerThickness / 2, fingerLength, fingerThickness, fingerThickness / 2);
+    ctx.roundRect(0, -fingerThickness / 2, seg1Length, fingerThickness, fingerThickness / 2);
     ctx.fillStyle = '#475569';
     ctx.fill();
 
-    // "Neon" Core for the finger
+    // Neon core segment 1
     ctx.beginPath();
     ctx.moveTo(10 * scale, 0);
-    ctx.lineTo(fingerLength - (10 * scale), 0);
+    ctx.lineTo(seg1Length - (10 * scale), 0);
     ctx.strokeStyle = activeColor;
     ctx.lineWidth = 4 * scale;
     ctx.lineCap = 'round';
@@ -235,10 +242,56 @@ function drawScene() {
     ctx.stroke();
     ctx.shadowBlur = 0;
 
-    ctx.restore();
+    // Move to first interphalangeal joint
+    ctx.translate(seg1Length, 0);
 
+    // Segment 2 (medial)
+    ctx.rotate(angle2);
+    ctx.beginPath();
+    ctx.roundRect(0, -fingerThickness / 2, seg2Length, fingerThickness, fingerThickness / 2);
+    ctx.fillStyle = '#475569';
+    ctx.fill();
 
-    // --- 3. Draw Joint (Knuckle) ---
+    // Neon core segment 2
+    ctx.beginPath();
+    ctx.moveTo(5 * scale, 0);
+    ctx.lineTo(seg2Length - (5 * scale), 0);
+    ctx.strokeStyle = activeColor;
+    ctx.lineWidth = 4 * scale;
+    ctx.lineCap = 'round';
+    ctx.shadowColor = activeColor;
+    ctx.shadowBlur = 10;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // Move to second interphalangeal joint
+    ctx.translate(seg2Length, 0);
+
+    // Segment 3 (distal)
+    ctx.rotate(angle3);
+    ctx.beginPath();
+    ctx.roundRect(0, -fingerThickness / 2, seg3Length, fingerThickness, fingerThickness / 2);
+    ctx.fillStyle = '#475569';
+    ctx.fill();
+
+    // Neon core segment 3
+    ctx.beginPath();
+    ctx.moveTo(5 * scale, 0);
+    ctx.lineTo(seg3Length - (5 * scale), 0);
+    ctx.strokeStyle = activeColor;
+    ctx.lineWidth = 4 * scale;
+    ctx.lineCap = 'round';
+    ctx.shadowColor = activeColor;
+    ctx.shadowBlur = 10;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    ctx.restore(); // end segments chain
+    ctx.restore(); // end global finger transform
+
+    // --- 3. Draw joints (MCP, PIP, DIP) ---
+
+    // MCP joint (base at palm)
     ctx.beginPath();
     ctx.arc(pivotX, pivotY, jointSize, 0, Math.PI * 2);
     ctx.fillStyle = '#1e293b';
@@ -247,7 +300,6 @@ function drawScene() {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    // Inner Glow Dot
     ctx.beginPath();
     ctx.arc(pivotX, pivotY, jointSize * 0.4, 0, Math.PI * 2);
     ctx.fillStyle = activeColor;
@@ -256,12 +308,43 @@ function drawScene() {
     ctx.fill();
     ctx.shadowBlur = 0;
 
+    // Compute joint positions for PIP and DIP in world space
+    // Recompute forward kinematics
+    const dir1x = Math.cos(angle1);
+    const dir1y = Math.sin(angle1);
+    const pipX = pivotX + dir1x * seg1Length;
+    const pipY = pivotY + dir1y * seg1Length;
+
+    const dir2x = Math.cos(angle1 + angle2);
+    const dir2y = Math.sin(angle1 + angle2);
+    const dipX = pipX + dir2x * seg2Length;
+    const dipY = pipY + dir2y * seg2Length;
+
+    // PIP joint
+    ctx.beginPath();
+    ctx.arc(pipX, pipY, jointSize * 0.7, 0, Math.PI * 2);
+    ctx.fillStyle = '#1e293b';
+    ctx.fill();
+    ctx.strokeStyle = activeColor;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // DIP joint
+    ctx.beginPath();
+    ctx.arc(dipX, dipY, jointSize * 0.6, 0, Math.PI * 2);
+    ctx.fillStyle = '#1e293b';
+    ctx.fill();
+    ctx.strokeStyle = activeColor;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
     // --- 4. Draw Angle Text ---
     ctx.font = `bold ${16 * scale}px 'Outfit', sans-serif`;
     ctx.fillStyle = '#fff';
     ctx.textAlign = 'center';
     ctx.fillText(Math.round(currentAngle) + "°", pivotX, pivotY + (45 * scale));
 }
+
 
 // Initial draw
 drawScene();
