@@ -140,7 +140,7 @@ function handleSerialData(dataString) {
 
     // Target for animation interlpolation
     let angle = Math.abs(diff * sensitivity);
-    targetAngle = Math.min(Math.max(angle, 0), 140);
+    targetAngle = Math.min(Math.max(angle, 0), 90); // Limit finger flexion to 90 degrees
 
     updateSensorDisplay();
 }
@@ -159,11 +159,11 @@ function updateSensorDisplay() {
 // --- VISUALIZATION ENGINE ---
 
 function getColorForAngle(angle) {
-    // 0-45: Green/Blue (Safe)
-    // 45-90: Orange (Warning)
-    // 90+: Red (Danger)
-    if (angle < 45) return '#0ea5e9'; // Blue
-    if (angle < 90) return '#f59e0b'; // Amber
+    // 0-30: Green/Blue (Safe)
+    // 30-60: Orange (Warning)
+    // 60+: Red (Danger)
+    if (angle < 30) return '#0ea5e9'; // Blue
+    if (angle < 60) return '#f59e0b'; // Amber
     return '#ef4444'; // Red
 }
 
@@ -182,79 +182,51 @@ function drawScene() {
 
     const cx = canvas.width / 2;
     const cy = canvas.height / 2 + 50;
-    const scale = Math.min(canvas.width, canvas.height) / 500; // Responsive scale
-
-    const pivotX = cx;
-    const pivotY = cy;
-
-    const upperArmLength = 120 * scale;
-    const forearmLength = 120 * scale;
-    const thickness = 25 * scale;
+    const scale = Math.min(canvas.width, canvas.height) / 600;
 
     const activeColor = getColorForAngle(currentAngle);
 
-    // --- 1. Draw Gauge Arc ---
-    ctx.beginPath();
-    ctx.arc(pivotX, pivotY, upperArmLength * 1.5, Math.PI, 2 * Math.PI);
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-    ctx.lineWidth = 10 * scale;
-    ctx.lineCap = 'round';
-    ctx.stroke();
+    // --- Palm and Finger Dimensions ---
+    const handWidth = 150 * scale;
+    const handHeight = 90 * scale;
+    const fingerLength = 120 * scale;
+    const fingerThickness = 25 * scale;
+    const jointSize = fingerThickness * 0.9;
 
-    // Active Gauge
-    const gaugeStart = Math.PI + Math.PI / 2; // Start from top (vertical)
-    // Map angle 0-140 to gauge. 0 deg = vertical. 140 deg = horizontal-ish
-    // Let's visualize flexion: 0 is straight arm (vertical). 
-    // We want the gauge to fill as angle increases.
-    const gaugeEnd = gaugeStart + (currentAngle * Math.PI / 180);
+    // The hand is drawn centered horizontally. The pivot for the finger is on the right.
+    const handStartX = cx - handWidth / 1.5;
+    const handStartY = cy - handHeight / 2;
+    const pivotX = handStartX + handWidth; // Knuckle position
+    const pivotY = cy; 
 
-    ctx.beginPath();
-    ctx.arc(pivotX, pivotY, upperArmLength * 1.5, gaugeStart, gaugeEnd, false);
-    ctx.strokeStyle = activeColor;
-    ctx.shadowColor = activeColor;
-    ctx.shadowBlur = 15;
-    ctx.stroke();
-    ctx.shadowBlur = 0; // Reset
-
-    // --- 2. Draw Upper Arm (Fixed Vertical) ---
-    // Function to draw a capsule/bone shape
-
-    ctx.save();
-    ctx.translate(pivotX, pivotY);
-    ctx.rotate(Math.PI); // Point Up
-
-    // Draw Bone Styles
+    // --- 1. Draw Palm ---
     ctx.fillStyle = '#334155';
-    ctx.strokeStyle = activeColor;
+    ctx.strokeStyle = '#475569';
     ctx.lineWidth = 2;
-
-    // Upper Arm Shape
     ctx.beginPath();
-    ctx.roundRect(-thickness / 2, 0, thickness, upperArmLength, 10);
+    ctx.roundRect(handStartX, handStartY, handWidth, handHeight, 15 * scale);
     ctx.fill();
     ctx.stroke();
 
-    ctx.restore();
-
-    // --- 3. Draw Forearm (Rotates) ---
-
+    // --- 2. Draw Finger (Rotates) ---
     ctx.save();
     ctx.translate(pivotX, pivotY);
-    // Rotate based on angle. -PI/2 is straight up. 
-    // Adding angle rotates it "down" (flexion)
-    const rotation = -Math.PI + (currentAngle * Math.PI / 180);
+
+    // Rotation: 0 degrees angle = straight finger.
+    const rotation = (currentAngle * Math.PI / 180);
     ctx.rotate(rotation);
 
-    // Forearm Shape
+    // Finger Shape
     ctx.beginPath();
-    ctx.roundRect(-thickness / 2, 0, thickness, forearmLength, 10);
+    // Centering the finger on its rotation axis
+    ctx.roundRect(0, -fingerThickness / 2, fingerLength, fingerThickness, fingerThickness / 2);
     ctx.fillStyle = '#475569';
     ctx.fill();
 
-    // Add "Neon" Core to forearm
+    // "Neon" Core for the finger
     ctx.beginPath();
-    ctx.moveTo(0, 10);
-    ctx.lineTo(0, forearmLength - 10);
+    ctx.moveTo(10 * scale, 0);
+    ctx.lineTo(fingerLength - (10 * scale), 0);
     ctx.strokeStyle = activeColor;
     ctx.lineWidth = 4 * scale;
     ctx.lineCap = 'round';
@@ -265,9 +237,10 @@ function drawScene() {
 
     ctx.restore();
 
-    // --- 4. Draw Joint (Elbow) ---
+
+    // --- 3. Draw Joint (Knuckle) ---
     ctx.beginPath();
-    ctx.arc(pivotX, pivotY, thickness * 0.8, 0, Math.PI * 2);
+    ctx.arc(pivotX, pivotY, jointSize, 0, Math.PI * 2);
     ctx.fillStyle = '#1e293b';
     ctx.fill();
     ctx.strokeStyle = activeColor;
@@ -276,20 +249,18 @@ function drawScene() {
 
     // Inner Glow Dot
     ctx.beginPath();
-    ctx.arc(pivotX, pivotY, thickness * 0.3, 0, Math.PI * 2);
+    ctx.arc(pivotX, pivotY, jointSize * 0.4, 0, Math.PI * 2);
     ctx.fillStyle = activeColor;
     ctx.shadowColor = activeColor;
     ctx.shadowBlur = 15;
     ctx.fill();
     ctx.shadowBlur = 0;
 
-    // --- 5. Draw Angle Text near elbow ---
+    // --- 4. Draw Angle Text ---
     ctx.font = `bold ${16 * scale}px 'Outfit', sans-serif`;
     ctx.fillStyle = '#fff';
     ctx.textAlign = 'center';
-    ctx.fillText(Math.round(currentAngle) + "°", pivotX, pivotY + (40 * scale));
-
-    // Request next frame if not in loop (for redundancy logic if needed, but handled by animate)
+    ctx.fillText(Math.round(currentAngle) + "°", pivotX, pivotY + (45 * scale));
 }
 
 // Initial draw
