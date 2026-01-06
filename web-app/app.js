@@ -215,7 +215,7 @@ function drawScene() {
     // --- Angles pour les 3 articulations (enroulement) ---
     const MCP_MAX = 80;   // base du doigt
     const PIP_MAX = 100;  // articulation du milieu
-    const DIP_MAX = 60;   // extrémité
+    const DIP_MAX = 100;   // extrémité
 
     const norm = Math.min(Math.max(currentAngle / 180, 0), 1); // 0..1 selon ton angle global
 
