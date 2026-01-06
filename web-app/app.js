@@ -140,7 +140,7 @@ function handleSerialData(dataString) {
 
     // Target for animation interlpolation
     let angle = Math.abs(diff * sensitivity);
-    targetAngle = Math.min(Math.max(angle, 0), 90); // Limit finger flexion to 90 degrees
+    targetAngle = Math.min(Math.max(angle, 0), 180); // Limit finger flexion to 90 degrees
 
     updateSensorDisplay();
 }
