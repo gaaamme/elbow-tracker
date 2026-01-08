@@ -1,73 +1,67 @@
-# Elbow Flexion Tracker (Premium Edition)
+# Visualisation de l'angle du doigt
 
-A professional-grade real-time elbow flexion tracking system using **Arduino Uno**, **Bluetooth Classic (HC-05)**, and a **Premium Web Visualization**.
+Un système professionnel de suivi de la flexion du doigt en temps réel utilisant un **Arduino Uno**, un module **Bluetooth Classic (HC-05)**, et une **Interface Web Premium**.
 
-## Overview
-This project uses a flex sensor to measure elbow angle. Data is transmitted wirelessly via Bluetooth Serial to a high-end web dashboard featuring a cyberpunk/medical aesthetic, anatomical visualization, and real-time biomechanical feedback.
+## 📝 Présentation
+Ce projet utilise un capteur de pression pour mesurer l'angle d'un doigt. Les données sont transmises sans fil via Bluetooth à un tableau de bord web, avec une visualisation anatomique d'une main robotique et un feedback biomécanique en temps réel.
 
-## ✨ Key Features
-- **Premium "Cyberpunk/Medical" UI**: Dark mode, glassmorphism, neon accents, and fluid animations.
-- **Anatomical Visualization**: Realistic stylized arm that morphs and rotates in sync with your movement.
-- **Dynamic Biofeedback**:
-    - **Blue (Safe)**: 0° - 45°
-    - **Amber (Warning)**: 45° - 90°
-    - **Red (Critical)**: >90°
-- **Web Serial API**: Reliable low-latency connection via Chrome/Edge.
-- **Instant Calibration**: One-click calibration for "straight arm" baseline.
+## ✨ Caractéristiques principales
+- **Interface Premium "Cyberpunk"** : Mode sombre, glassmorphism, accents néon et animations fluides.
+- **Visualisation de la Main** : Une main stylisée avec un doigt articulé (3 segments) qui se plie en synchronisation avec vos mouvements.
+- **Feedback Dynamique** :
+    - **Bleu (Sûr)** : Flexion légère.
+    - **Ambre (Avertissement)** : Flexion moyenne.
+    - **Rouge (Critique)** : Flexion maximale.
+- **Web Serial API** : Connexion à faible latence via Chrome/Edge sur PC.
+- **Mode Miroir** : Permet d'afficher la visualisation sur un téléphone ou une tablette en utilisant le PC comme pont (via PeerJS).
+- **Calibrage Instantané** : Calibrage en un clic pour définir la position de base (doigt tendu).
 
-## 🛠 Hardware Requirements
-- **Microcontroller**: Arduino Uno (or compatible AVR board)
-- **Bluetooth**: HC-05 or HC-06 Module (Bluetooth v3.0 / Classic)
-- **Sensor**: Flex Sensor (Spectra Symbol or similar)
-- **Components**:
-    - 1x 10kΩ Resistor (Sensor Voltage Divider)
-    - 1x 1kΩ & 1x 2kΩ Resistors (Bluetooth RX Voltage Divider - Optional but recommended)
+## 🛠 Matériel Requis
+- **Microcontrôleur** : Arduino Uno (ou compatible).
+- **Bluetooth** : Module HC-05 ou HC-06 (Bluetooth v3.0 / Classic).
+- **Capteur** : Capteur de Pression.
 
-## 🔌 Wiring Guide
+## 🔌 Guide de Câblage
 
-| Component | Pin | Arduino Pin | Note |
+| Composant | Broche | Broche Arduino | Note |
 | :--- | :--- | :--- | :--- |
-| **Flex Sensor** | Pin 1 | **3.3V or 5V** | |
-| **Flex Sensor** | Pin 2 | **A0** | Also connect 10kΩ resistor to GND |
-| **HC-05 TX** | TX | **Pin 10** | Arduino RX (SoftwareSerial) |
-| **HC-05 RX** | RX | **Pin 11** | Arduino TX (Use voltage divider if possible) |
-| **HC-05 Power** | VCC | **5V** | Check your module specs |
-| **HC-05 GND** | GND | **GND** | |
+| **Capteur Pression** | VCC | Arduino **3.3V** |
+| **Capteur Pression** | GND | Arduino **GND** |
+| **Capteur Pression** | A0 | Arduino **A0** | 
+| **HC-05 TX** | TX | **Pin 10** | Arduino RX |
+| **HC-05 RX** | RX | **Pin 11** | Arduino TX |
+| **HC-05 Alimentation**| VCC |Arduino **5V** |
+| **HC-05 GND** | GND | Arduino **GND** |
 
-## 🚀 Setup & Installation
+## 🚀 Installation et Configuration
 
-### 1. Arduino Firmware
-1. Open `arduino/elbow_tracker/elbow_tracker.ino`.
-2. Select Board: **Arduino Uno**.
-3. Upload the sketch via USB.
-    > **Note**: If upload fails, unplug the Bluetooth module temporarily.
+### 1. Firmware Arduino
+1. Ouvrez `arduino/elbow_tracker/elbow_tracker.ino`.
+2. Sélectionnez la carte : **Arduino Uno**.
+3. Téléversez le code via USB.
 
-### 2. Bluetooth Pairing (Windows)
-1. Go to **Settings > Bluetooth & Devices**.
-2. Click **Add Device > Bluetooth**.
-3. Select your module (often named "HC-05", "Unknown", or "linvor").
-4. Enter PIN: `1234` or `0000`.
-5. This will create a **COM Port** (e.g., COM4, COM5).
+### 2. Appairage Bluetooth (Windows)
+1. Allez dans **Paramètres > Bluetooth et appareils**.
+2. Cliquez sur **Ajouter un appareil > Bluetooth**.
+3. Sélectionnez votre module (ex: "HC-05").
+4. Entrez le code PIN : `1234` ou `0000`.
 
-### 3. Web Dashboard
-1. You must run the app on a **Local Server** (Web Serial requirement).
+### 3. Tableau de Bord Web
+1. Lancez le serveur local sur votre PC :
     ```bash
     cd web-app
     npx serve .
     ```
-2. Open `http://localhost:3000` in **Chrome** or **Edge**.
-3. Click **CONNECT TO SERIAL**.
-4. Select the **Bluetooth COM Port** (e.g., "Standard Serial over Bluetooth link (COM7)").
-    > **Do NOT select COM3** (That is usually the USB cable).
-5. Flex your arm!
+2. Ouvrez `http://localhost:3000` dans **Chrome**.
+3. Cliquez sur **SE CONNECTER** et choisissez le port COM du Bluetooth.
 
-## 🧪 Usage
-1. **Connect**: Follow steps above.
-2. **Calibrate**: Straighten your arm fully and click **CALIBRATE**. This sets the 0° baseline.
-3. **Monitor**: Watch the arm animation and gauge. The color will change as you flex further.
+## 📱 Utilisation du Mode Miroir (Téléphone)
+1. Connectez votre PC en Bluetooth.
+2. Notez le **Code Miroir** (ex: `XBT1`) en bas de la page sur le PC.
+3. Sur votre téléphone, ouvrez le site (via l'IP de votre PC).
+4. Entrez le code dans la section **Mode Miroir** et cliquez sur **REJOINDRE**.
 
-## ⚠️ Compatibility
-- **Supported**: Chrome, Edge, Opera (Desktop).
-- **Not Supported**:
-    - **Mobile**: Android/iOS (Web Serial over Bluetooth is limited on mobile).
-    - **Firefox/Safari**: No Web Serial support yet.
+## 🧪 Utilisation
+1. **Connexion** : Bouton "Se connecter" sur le PC.
+2. **Calibrage** : Tendez votre doigt au maximum et cliquez sur **CALIBRER**. Cela définit le point 0°.
+3. **Suivi** : Observez le doigt virtuel se plier selon votre propre mouvement.

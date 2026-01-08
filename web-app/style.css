@@ -61,11 +61,12 @@ body::before {
     width: 100%;
     max-width: 800px;
     padding: 1.5rem;
-    padding-top: 90px;
+    padding-top: 100px;
+    /* Space for fixed header */
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    height: 100vh;
+    min-height: 100vh;
 }
 
 .top-header {
@@ -112,6 +113,8 @@ body::before {
     padding: 2rem;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     flex: 1;
+    min-height: 350px;
+    /* Ensure visibility on mobile */
     position: relative;
     display: flex;
     align-items: center;
@@ -239,4 +242,35 @@ canvas {
     font-weight: 700;
     font-family: monospace;
     color: var(--text-primary);
+}
+
+/* Mirror Mode Styles */
+.mirror-controls {
+    margin-bottom: 2rem;
+    padding-top: 0 !important;
+    height: auto !important;
+}
+
+.mirror-controls h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#mirrorIdInput:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+@media (max-width: 600px) {
+    .sensor-data {
+        grid-template-columns: 1fr;
+    }
+
+    .container {
+        padding-top: 120px;
+    }
 }

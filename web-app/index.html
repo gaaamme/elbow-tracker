@@ -46,8 +46,26 @@
         </div>
     </main>
 
+    <div class="mirror-controls container">
+        <div class="controls-wrapper">
+            <h3>Mode Miroir</h3>
+            <div id="mirror-status" class="status-bar" style="margin-bottom: 10px;">
+                <span id="mirror-id-display">Initialisation...</span>
+            </div>
+            <div class="controls" style="gap: 10px;">
+                <input type="text" id="mirrorIdInput" placeholder="Code miroir du PC"
+                    style="padding: 10px; border-radius: 8px; border: 1px solid #475569; background: #1e293b; color: white; flex-grow: 1;">
+                <button id="joinMirrorBtn" class="btn">Rejoindre</button>
+            </div>
+            <p id="mirror-info" style="font-size: 0.8rem; color: #94a3b8; margin-top: 10px;">
+                Pour voir l'angle sur votre téléphone : connectez le Bluetooth sur PC, notez le code, et entrez-le sur
+                le téléphone.
+            </p>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     <script src="app.js"></script>
 </body>
-
 
 </html>
