@@ -282,9 +282,9 @@ initPeer();
 let isAnimating = false;
 
 function getColorForAngle(angle) {
-    if (angle < 30) return '#0ea5e9'; // Blue
-    if (angle < 45) return '#f59e0b'; // Amber
-    return '#ef4444'; // Red
+    if (angle < 30) return '#0ea5e9';
+    if (angle < 45) return '#f59e0b';
+    return '#ef4444';
 }
 
 function animate() {
