@@ -23,6 +23,8 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 const valRaw = document.getElementById('val-raw');
 const valOffset = document.getElementById('val-offset');
 const valAngle = document.getElementById('val-angle');
+const valSensitivity = document.getElementById('val-sensitivity');
+const sensitivitySlider = document.getElementById('sensitivitySlider');
 
 const connectBtn = document.getElementById('connectBtn');
 const calibrateBtn = document.getElementById('calibrateBtn');
@@ -39,6 +41,7 @@ let keepReading = false;
 
 let rawSensorValue = 0;
 let calibrationOffset = 0;
+let sensitivity = 1.0; // Default increased from 0.3
 let currentAngle = 0;
 let targetAngle = 0;
 
@@ -62,6 +65,11 @@ connectBtn.addEventListener('click', async () => {
 
 calibrateBtn.addEventListener('click', () => {
     calibrate();
+});
+
+sensitivitySlider.addEventListener('input', (e) => {
+    sensitivity = parseFloat(e.target.value);
+    valSensitivity.textContent = sensitivity.toFixed(1);
 });
 
 async function connect() {
@@ -157,7 +165,7 @@ function handleSerialData(dataString) {
     rawSensorValue = Math.round(avgRaw);
 
     const diff = rawSensorValue - calibrationOffset;
-    const sensitivity = 0.3;
+    // sensitivity is now dynamic
 
     let angle = Math.abs(diff * sensitivity);
     targetAngle = Math.min(Math.max(angle, 0), 180);
