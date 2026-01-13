@@ -1,4 +1,4 @@
-// Fallback for roundRect (for older browsers/mobile)
+
 if (!CanvasRenderingContext2D.prototype.roundRect) {
     CanvasRenderingContext2D.prototype.roundRect = function (x, y, width, height, radius) {
         if (typeof radius === 'undefined') radius = 0;
@@ -40,9 +40,8 @@ let keepReading = false;
 let rawSensorValue = 0;
 let calibrationOffset = 0;
 let currentAngle = 0;
-let targetAngle = 0; // For smooth animation
+let targetAngle = 0;
 
-// Visualization parameters
 const centerX = canvas.width / 2;
 const centerY = canvas.height / 2;
 
@@ -51,7 +50,7 @@ function resizeCanvas() {
     canvas.height = canvas.parentElement.clientHeight;
 }
 window.addEventListener('resize', resizeCanvas);
-resizeCanvas(); // Initial call
+resizeCanvas();
 
 connectBtn.addEventListener('click', async () => {
     if (port && port.readable) {
@@ -81,7 +80,7 @@ async function connect() {
 
             keepReading = true;
             readSerialLoop();
-            animate(); // Start animation loop
+            animate();
         } else {
             statusText.textContent = "Web Serial non supporté.";
         }
@@ -160,12 +159,10 @@ function handleSerialData(dataString) {
     const diff = rawSensorValue - calibrationOffset;
     const sensitivity = 0.3;
 
-    // Target for animation interpolation
     let angle = Math.abs(diff * sensitivity);
     targetAngle = Math.min(Math.max(angle, 0), 180);
 
     updateSensorDisplay();
-    // PC SENDS TO PHONE
     broadcastToMirrors({
         angle: targetAngle,
         raw: rawSensorValue,
@@ -176,7 +173,6 @@ function handleSerialData(dataString) {
 function calibrate() {
     calibrationOffset = rawSensorValue;
     alert("Calibrage effectué !");
-    // Also notify mirrors of new offset
     broadcastToMirrors({ offset: calibrationOffset });
 }
 
@@ -186,7 +182,7 @@ function updateSensorDisplay() {
     valAngle.textContent = currentAngle.toFixed(1) + "°";
 }
 
-// --- MIRROR MODE (PEERJS) ---
+// Mode Mirroir (PEERJS)
 const mirrorIdDisplay = document.getElementById('mirror-id-display');
 const mirrorIdInput = document.getElementById('mirrorIdInput');
 const joinMirrorBtn = document.getElementById('joinMirrorBtn');
@@ -208,7 +204,6 @@ function initPeer() {
 
     peer.on('connection', (c) => {
         connections.push(c);
-        // Special UI for PC when a mirror connects
         statusText.textContent = "Mode Maître (Miroir connecté)";
         statusText.classList.add('connected');
         c.on('close', () => {
@@ -251,16 +246,13 @@ if (joinMirrorBtn) {
         });
 
         mirrorConnection.on('data', (data) => {
-            // PHONE RECEIVES FROM PC
             console.log("Data received from PC:", data);
 
             if (data.angle !== undefined) targetAngle = data.angle;
             if (data.raw !== undefined) rawSensorValue = data.raw;
             if (data.offset !== undefined) calibrationOffset = data.offset;
 
-            // Force values if we are in mirror mode
             if (!keepReading) {
-                // Ensure animation is running
                 if (!isAnimating) {
                     isAnimating = true;
                     animate();
